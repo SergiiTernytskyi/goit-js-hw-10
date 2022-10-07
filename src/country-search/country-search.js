@@ -4,7 +4,8 @@ export default class CountriesApiService {
   }
 
   fetchCountries() {
-    const url = `https://restcountries.com/v2/name/${this.queryName}?fields=name,capital,population,flags,languages`;
+    const url = `https://restcountries.com/v3.1/name/${this.queryName}?fields=name,population,capital,flags,languages`;
+    console.log(url);
 
     return fetch(url)
       .then(response => {
