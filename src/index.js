@@ -1,12 +1,11 @@
 import './css/styles.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import debounce from 'lodash.debounce';
-import CountriesApiService from './country-search/country-search';
+import CountriesApiService from './country-search';
 import { createMarkup } from './create-markup';
 import { refs } from './refs';
 
 const DEBOUNCE_DELAY = 300;
-
 const countriesApiService = new CountriesApiService();
 
 refs.searchBox.addEventListener(
@@ -15,39 +14,40 @@ refs.searchBox.addEventListener(
 );
 
 function inputHandler(event) {
-  if (event.target.value === '') {
-    refs.countryList.innerHTML = '';
-    refs.countryInfo.innerHTML = '';
-    return Notify.failure('Please enter some characters for search!', {
-      position: 'center-center',
+  if (event.target.value.trim() === '') {
+    return Notify.failure('Please enter some character for search!', {
+      position: 'center-top',
     });
   }
 
   countriesApiService.query = event.target.value.trim().toLowerCase();
 
-  let markup = '';
-
   countriesApiService
     .fetchCountries()
     .then(countries => {
-      markup = createMarkup(countries);
-      console.log(markup);
-
       if (countries.length === 1) {
-        refs.countryList.innerHTML = '';
-        refs.countryInfo.innerHTML = markup;
+        renderCountriesList(countries);
       } else {
-        refs.countryInfo.innerHTML = '';
-        refs.countryList.innerHTML = markup;
+        renderCountryInfo(countries);
       }
     })
     .catch(error => {
       Notify.failure(
         `${error.message} Oops, there is no country with that name`,
         {
-          position: 'center-center',
+          position: 'center-top',
         }
       );
       refs.countryInfo.innerHTML = '';
     });
+}
+
+function renderCountriesList(countries) {
+  refs.countryList.innerHTML = '';
+  refs.countryInfo.innerHTML = createMarkup(countries);
+}
+
+function renderCountryInfo(countries) {
+  refs.countryInfo.innerHTML = '';
+  refs.countryList.innerHTML = createMarkup(countries);
 }
