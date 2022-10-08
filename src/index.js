@@ -15,6 +15,8 @@ refs.searchBox.addEventListener(
 
 function inputHandler(event) {
   if (event.target.value.trim() === '') {
+    clearCountries();
+
     return Notify.failure('Please enter some character for search!', {
       position: 'center-top',
     });
@@ -26,9 +28,11 @@ function inputHandler(event) {
     .fetchCountries()
     .then(countries => {
       if (countries.length === 1) {
-        renderCountriesList(countries);
-      } else {
+        clearCountries();
         renderCountryInfo(countries);
+      } else {
+        clearCountries();
+        renderCountryList(countries);
       }
     })
     .catch(error => {
@@ -42,12 +46,15 @@ function inputHandler(event) {
     });
 }
 
-function renderCountriesList(countries) {
+function clearCountries() {
   refs.countryList.innerHTML = '';
-  refs.countryInfo.innerHTML = createMarkup(countries);
+  refs.countryInfo.innerHTML = '';
 }
 
-function renderCountryInfo(countries) {
-  refs.countryInfo.innerHTML = '';
+function renderCountryList(countries) {
   refs.countryList.innerHTML = createMarkup(countries);
+}
+
+function renderCountryInfo(country) {
+  refs.countryInfo.innerHTML = createMarkup(country);
 }
